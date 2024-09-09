@@ -1,4 +1,4 @@
-import express, {Express, Request, Response, NextFunction} from "express"
+import express, {Express, Request, Response} from "express"
 import dotenv from "dotenv"
 import http from "http"
 import cors from "cors"
