@@ -1,5 +1,5 @@
 {
-  "name": "travelkong-be-account",
+  "name": "travelkong-be",
   "version": "1.0.0",
   "description": "A module that handles users' accounts (also deals with registering and login).",
   "main": "index.ts",
