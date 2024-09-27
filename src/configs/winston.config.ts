@@ -1,8 +1,9 @@
 import winston, { format, transports } from "winston"
+import DailyRotateFile from "winston-daily-rotate-file"
 import { existsSync, mkdirSync } from "fs"
 import path from "path"
 
-const logDirectory: string = path.join(__dirname, "../../logs")
+const logDirectory: string = path.join(__dirname, "~/logs")
 
 if (!existsSync(logDirectory)) {
   mkdirSync(logDirectory, { recursive: true })
@@ -11,8 +12,6 @@ if (!existsSync(logDirectory)) {
 const logger: winston.Logger = winston.createLogger({
   defaultMeta: { service: "user-service" },
   format: format.combine(
-    format.splat(),
-    format.json(),
     format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
     format.colorize({ all: true }),
     format.printf((log: winston.Logform.TransformableInfo) => {
@@ -21,12 +20,30 @@ const logger: winston.Logger = winston.createLogger({
     }),
   ),
   transports: [
-    new transports.Console(),
-    new transports.File({
-      level: "error",
-      filename: path.join(__dirname, "errors.log"),
+    new transports.Console({
+      format: format.combine(
+        format.colorize(),
+        format.printf((log: winston.Logform.TransformableInfo) => {
+          return `[${log.timestamp}] [${log.level}] [${log.message}]`
+        }),
+      ),
+    }),
+    new DailyRotateFile({
+      filename: path.join(logDirectory, "app-%DATE%.log"),
+      datePattern: "YYYY-MM-DD",
+      maxSize: "20m",
+      maxFiles: "14d",
+      format: format.json(),
     }),
   ],
 })
+
+logger.exceptions.handle(
+  new transports.File({ filename: path.join(logDirectory, "exceptions.log") }),
+)
+
+logger.exceptions.handle(
+  new transports.File({ filename: path.join(logDirectory, "rejections.log") }),
+)
 
 export default logger

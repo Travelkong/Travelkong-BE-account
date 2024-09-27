@@ -5,6 +5,7 @@ export class Logger {
     logger.log({
       level: "error",
       message: err.message,
+      stack: err.stack,
     })
   }
 }
