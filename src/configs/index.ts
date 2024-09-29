@@ -1,2 +1,2 @@
-export * from "./postgresql.config"
+export * from "./postgres.config"
 export * from "./winston.config"
